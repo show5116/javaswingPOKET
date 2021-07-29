@@ -23,10 +23,8 @@ import java.awt.event.KeyEvent;
 import java.awt.Rectangle;
 
 public class TestSwing extends JFrame{
-	private static final String idPattern = "^[a-zA-Z]+[a-zA-Z0-9]{5,19}$";
-    private static final String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,20}$";
-    private static final String mailPattern = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z]){3,20}@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z]){4,20}.[a-zA-Z]{2,3}$";
     boolean idFlag,passwordFlag,passCheckFlag,mailFlag;
+    boolean passwordFlag2,passCheckFlag2;
     
 	private JPanel contentPane;
 	private CardLayout cardLayoutSet;
@@ -40,6 +38,12 @@ public class TestSwing extends JFrame{
 	private JTextField signupMailField;
 	private JTextField idfounderNameField;
 	private JTextField idfounderMailField;
+	private JTextField passchangeMailField;
+	private JPasswordField passchangeCurrentPassword;
+	private JTextField passchangeNameField;
+	private JTextField passchangeIdField;
+	private JPasswordField passchangeChangePassword;
+	private JPasswordField passchangePasswordCheck;
 	
 	public TestSwing() {
 		setTitle("poketmon");
@@ -87,6 +91,13 @@ public class TestSwing extends JFrame{
 				g.drawImage(iconcomponent.getImage(),0,0,null);
 			}
 		};
+		idfounderPanel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				
+			}
+		});
 		JPanel passchangePanel = new JPanel() {
 			public void paintComponent(Graphics g) {
 				g.drawImage(iconcomponent.getImage(),0,0,null);
@@ -191,7 +202,7 @@ public class TestSwing extends JFrame{
 		loginLoginButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(User.logIn(loginIdTextField.getText(),loginPasswordField.getText())) {
+				if(UserDAO.logIn(loginIdTextField.getText(),loginPasswordField.getText())) {
 					loginStateLabel.setText("로그인 성공");
 				}else {
 					loginStateLabel.setText("<html>아이디가 없거나<br>비밀번호가 틀렸습니다.</html>");
@@ -225,7 +236,7 @@ public class TestSwing extends JFrame{
 		signupPasswordField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(User.patternCheck(signupPasswordField.getText(),passwordPattern)) {
+				if(PatternCheck.patternCheck(signupPasswordField.getText(),PatternCheck.passwordPattern)) {
 					signupPasswordLabel.setText("사용 가능합니다.");
 					passwordFlag = true;
 				}else {
@@ -273,7 +284,7 @@ public class TestSwing extends JFrame{
 		signupMailField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(User.patternCheck(signupMailField.getText(), mailPattern)) {
+				if(PatternCheck.patternCheck(signupMailField.getText(), PatternCheck.mailPattern)) {
 					signupMailLabel.setText("사용 가능합니다.");
 					mailFlag = true;
 				}else {
@@ -314,7 +325,7 @@ public class TestSwing extends JFrame{
 					String gender;
 					if(signupManRadioButton.isSelected()) gender = "M";
 					else gender = "W";
-					User.SignUp(signupIdField.getText(), signupPasswordField.getText(), signupNameField.getText(),
+					UserDAO.SignUp(signupIdField.getText(), signupPasswordField.getText(), signupNameField.getText(),
 							gender, signupNicknameField.getText(), signupMailField.getText());;
 					aa.showMessageDialog(null, "회원가입이 완료되었습니다.");
 					cardLayoutSet.show(contentPane, "mainPanel");
@@ -352,9 +363,9 @@ public class TestSwing extends JFrame{
 		signupDoublecheckButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(User.patternCheck(signupIdField.getText(),idPattern)) {
+				if(PatternCheck.patternCheck(signupIdField.getText(),PatternCheck.idPattern)) {
 					
-					if(User.doublecheck(signupIdField.getText())) {
+					if(UserDAO.doublecheck(signupIdField.getText())) {
 						JOptionPane aa=new JOptionPane();
 						aa.showMessageDialog(null, "이미 존재하는 아이디입니다.");
 					}else {
@@ -380,6 +391,137 @@ public class TestSwing extends JFrame{
 			}
 		});
 		idfounderBackButton.setBounds(377, 551, 144, 32);
+		
+
+		idfounderNameField = new JTextField();
+		idfounderNameField.setColumns(10);
+		idfounderNameField.setBounds(342, 295, 210, 32);
+		
+		idfounderMailField = new JTextField();
+		idfounderMailField.setBounds(342, 385, 210, 32);
+		idfounderMailField.setColumns(10);
+		
+		JButton idfounderFoundButton = new JButton("아이디 찾기");
+		idfounderFoundButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JOptionPane aa=new JOptionPane();
+				if(UserDAO.FindId(idfounderNameField.getText(),idfounderMailField.getText())!=null) {
+					String str = String.format("아이디는 %s입니다.", UserDAO.FindId(idfounderNameField.getText(),idfounderMailField.getText()));
+					aa.showMessageDialog(null, str);
+				}else {
+					aa.showMessageDialog(null, "회원정보가 없습니다.");
+				}
+			}
+		});
+		idfounderFoundButton.setBounds(377, 484, 144, 32);
+		
+		JLabel lblNewLabel_8 = new JLabel("이름");
+		lblNewLabel_8.setBounds(297, 303, 33, 15);
+		
+		JLabel lblNewLabel_9 = new JLabel("메일");
+		lblNewLabel_9.setBounds(297, 393, 33, 15);
+		/////
+		passchangeMailField = new JTextField();
+		passchangeMailField.setBounds(342, 320, 210, 32);
+		passchangeMailField.setColumns(10);
+		
+		passchangeCurrentPassword = new JPasswordField();
+		passchangeCurrentPassword.setBounds(342, 431, 210, 32);
+		
+		passchangeNameField = new JTextField();
+		passchangeNameField.setBounds(342, 267, 210, 32);
+		passchangeNameField.setColumns(10);
+		
+		passchangeIdField = new JTextField();
+		passchangeIdField.setBounds(342, 218, 210, 32);
+		
+		JLabel passchangePasswordLabel = new JLabel("<html>비밀번호는 문자 숫자 특수문자의 조합으로 <br>8자 이상으로 입력해주세요.</html>");
+		passchangePasswordLabel.setBounds(564, 464, 281, 62);
+		
+		JLabel lblNewLabel_17 = new JLabel("변경할 비밀번호");
+		lblNewLabel_17.setBounds(235, 481, 95, 15);
+		
+		JLabel lblNewLabel_18 = new JLabel("비밀번호 확인");
+		lblNewLabel_18.setBounds(248, 523, 82, 15);
+		
+		JLabel passchangePasscheckLabel = new JLabel("");
+		passchangePasscheckLabel.setBounds(564, 523, 168, 15);
+		
+		passchangeChangePassword = new JPasswordField();
+		passchangeChangePassword.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(PatternCheck.patternCheck(passchangeChangePassword.getText(),PatternCheck.passwordPattern)) {
+					passchangePasswordLabel.setText("사용 가능합니다.");
+					passwordFlag2 = true;
+				}else {
+					passchangePasswordLabel.setText("<html>비밀번호는 문자 숫자 특수문자의 조합으로 <br>8자 이상으로 입력해주세요.</html>");
+					passwordFlag2 = false;
+				}
+				if(passchangePasswordCheck.getText().equals(passchangeChangePassword.getText())) {
+					passchangePasscheckLabel.setText("일치합니다.");
+					passCheckFlag2 = true;
+				}else {
+					passchangePasscheckLabel.setText("비밀번호가 다릅니다.");
+					passCheckFlag2 = false;
+				}
+			}
+		});
+		passchangeChangePassword.setBounds(342, 473, 210, 32);
+		
+		passchangePasswordCheck = new JPasswordField();
+		passchangePasswordCheck.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(passchangePasswordCheck.getText().equals(passchangeChangePassword.getText())) {
+					passchangePasscheckLabel.setText("일치합니다.");
+					passCheckFlag2 = true;
+				}else {
+					passchangePasscheckLabel.setText("비밀번호가 다릅니다.");
+					passCheckFlag2 = false;
+				}
+			}
+		});
+		passchangePasswordCheck.setBounds(342, 515, 210, 32);
+		
+		
+		
+		JButton passchangeBackButton = new JButton("뒤로 가기");
+		passchangeBackButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				cardLayoutSet.show(contentPane, "mainPanel");	
+			}
+		});
+		passchangeBackButton.setBounds(new Rectangle(377, 551, 144, 32));
+		passchangeBackButton.setBounds(377, 599, 144, 32);
+		
+		JButton passchangeChangeButton = new JButton("비밀번호 변경");
+		passchangeChangeButton.setBounds(377, 557, 144, 32);
+		
+		JButton tempororyPasswordButton = new JButton("임시 비밀번호 발급");
+		tempororyPasswordButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+		tempororyPasswordButton.setBounds(377, 375, 144, 32);
+		
+
+		JLabel lblNewLabel_13 = new JLabel("ID");
+		lblNewLabel_13.setBounds(312, 226, 18, 15);
+		
+		JLabel lblNewLabel_14 = new JLabel("이름");
+		lblNewLabel_14.setBounds(298, 275, 32, 15);
+		
+		JLabel lblNewLabel_15 = new JLabel("메일");
+		lblNewLabel_15.setBounds(298, 328, 32, 15);
+		
+		JLabel lblNewLabel_16 = new JLabel("현재 비밀번호");
+		lblNewLabel_16.setBounds(248, 439, 82, 15);
+		contentPane.add(passchangePanel, "passchangePanel");
+		passchangePanel.setLayout(null);
 		
 		mainPanel.setLayout(null);
 		mainPanel.add(loginButton);
@@ -426,52 +568,39 @@ public class TestSwing extends JFrame{
 		signupPanel.add(signupPasswordField);
 		signupPanel.add(signupPassCheckField);
 		signupPanel.add(signupNameField);
+		
 		idfounderPanel.setLayout(null);
-		
+		idfounderPanel.add(idfounderNameField);
+		idfounderPanel.add(idfounderMailField);
+		idfounderPanel.add(idfounderFoundButton);
+		idfounderPanel.add(lblNewLabel_8);
+		idfounderPanel.add(lblNewLabel_9);
 		idfounderPanel.add(idfounderBackButton);
-		
 		
 		contentPane.add(mainPanel, "mainPanel");
 		contentPane.add(loginPanel, "loginPanel");
 		contentPane.add(signupPanel, "signupPanel");
 		contentPane.add(idfounderPanel, "idfounderPanel");
-		
-		idfounderNameField = new JTextField();
-		idfounderNameField.setColumns(10);
-		idfounderNameField.setBounds(342, 295, 210, 32);
-		idfounderPanel.add(idfounderNameField);
-		
-		idfounderMailField = new JTextField();
-		idfounderMailField.setBounds(342, 385, 210, 32);
-		idfounderPanel.add(idfounderMailField);
-		idfounderMailField.setColumns(10);
-		
-		JButton idfounderFoundButton = new JButton("아이디 찾기");
-		idfounderFoundButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				JOptionPane aa=new JOptionPane();
-				if(User.FindId(idfounderNameField.getText(),idfounderMailField.getText())!=null) {
-					String str = String.format("아이디는 %s입니다.", User.FindId(idfounderNameField.getText(),idfounderMailField.getText()));
-					aa.showMessageDialog(null, str);
-				}else {
-					aa.showMessageDialog(null, "회원정보가 없습니다.");
-				}
-			}
-		});
-		idfounderFoundButton.setBounds(377, 484, 144, 32);
-		idfounderPanel.add(idfounderFoundButton);
-		
-		JLabel lblNewLabel_8 = new JLabel("이름");
-		lblNewLabel_8.setBounds(297, 303, 33, 15);
-		idfounderPanel.add(lblNewLabel_8);
-		
-		JLabel lblNewLabel_9 = new JLabel("메일");
-		lblNewLabel_9.setBounds(297, 393, 33, 15);
-		idfounderPanel.add(lblNewLabel_9);
-		contentPane.add(passchangePanel, "passchangePanel");
-		passchangePanel.setLayout(null);
+		passchangePanel.add(passchangeBackButton);
+		passchangePanel.add(passchangeChangeButton);
+		passchangePanel.add(tempororyPasswordButton);
+		passchangePanel.add(passchangeMailField);
+		passchangePanel.add(passchangeCurrentPassword);
+		passchangePanel.add(passchangeNameField);
+		passchangePanel.add(passchangeIdField);
+		passchangePanel.add(lblNewLabel_13);
+		passchangePanel.add(lblNewLabel_14);
+		passchangePanel.add(lblNewLabel_15);
+		passchangePanel.add(lblNewLabel_16);
+		passchangePanel.add(passchangeChangePassword);
+		passchangePanel.add(passchangePasswordCheck);
+		passchangePanel.add(lblNewLabel_17);
+		passchangePanel.add(lblNewLabel_18);
+		passchangePanel.add(passchangePasscheckLabel);
+		passchangePanel.add(passchangePasswordLabel);
+				
 		cardLayoutSet.show(contentPane, "mainPanel");	
 	}
 }
-
+		
+	
